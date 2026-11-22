@@ -2,21 +2,28 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.mycompany.proyectofinal.eventos;
+package com.mycompany.proyectofinal.eventos.cobros;
+
 
 /**
  *
  * @author axelher67
  */
-public class PorInvitado extends TipoCobro{
+public class PorHora extends TipoCobro{
 
     @Override
     public double calcularMonto(DatosCobro datos, double costoUnitario) {
-        return costoUnitario*datos.getInvitados();
+        return costoUnitario*datos.getHoras();
     }
 
     @Override
     public String getUnidad() {
-        return "Invitado";
+        return "Hora";
+    }
+    
+    @Override
+    public int obtenerCantidad(DatosCobro datos) {
+        return datos.getHoras();
     }
 }
+
