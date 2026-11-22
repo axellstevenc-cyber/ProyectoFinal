@@ -4,7 +4,7 @@
  */
 package com.mycompany.proyectofinal.catalogo;
 
-import com.mycompany.proyectofinal.eventos.cobros.TipoCobro;
+import com.mycompany.proyectofinal.cobros.TipoCobro;
 import java.io.Serializable;
 
 /**
