@@ -81,6 +81,14 @@ public class Evento implements Serializable{
         if (telefonoCliente == null || telefonoCliente.isBlank()) {
             throw new IllegalArgumentException("El telefono del cliente es obligatorio.");
         }
+        if (telefonoCliente.length() != 8) {
+            throw new IllegalArgumentException("El teléfono debe tener 8 dígitos.");
+        }
+        for (int i = 0; i < telefonoCliente.length(); i++) {
+            if (!Character.isDigit(telefonoCliente.charAt(i))) {
+                throw new IllegalArgumentException("El telefono solo puede contener numeros.");
+            }
+        }
         this.telefonoCliente = telefonoCliente;
     }
 

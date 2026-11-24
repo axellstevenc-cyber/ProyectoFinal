@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Enum.java to edit this template
  */
 package com.mycompany.proyectofinal.eventos;
-
+ 
 /**
  *
  * @author axelher67
@@ -13,12 +13,14 @@ public enum TipoEvento {
     CUMPLEANOS("Cumpleaños"),
     CORPORATIVO("Corporativo"),
     GRADUACION("Graduación"),
+    QUINCEANOS("Quinceaños"),
     OTRO("Otro");
-
+ 
     private final String nombre;
-
+ 
     TipoEvento(String nombre) { this.nombre = nombre; }
-
+ 
     @Override
     public String toString() { return nombre; }
 }
+ 
