@@ -13,7 +13,7 @@ package com.mycompany.proyectofinal.cobros;
 public class PorEvento extends TipoCobro{
 
     @Override
-    public double calcularMonto(DatosCobro datos, double costoUnitario) {
+    public double calcularMonto(int cantidad, double costoUnitario) {
         return costoUnitario;
     }
 

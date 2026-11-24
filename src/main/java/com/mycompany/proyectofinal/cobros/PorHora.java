@@ -13,8 +13,8 @@ package com.mycompany.proyectofinal.cobros;
 public class PorHora extends TipoCobro{
 
     @Override
-    public double calcularMonto(DatosCobro datos, double costoUnitario) {
-        return costoUnitario*datos.getHoras();
+    public double calcularMonto(int cantidad, double costoUnitario) {
+        return costoUnitario*cantidad;
     }
 
     @Override

@@ -12,8 +12,8 @@ package com.mycompany.proyectofinal.cobros;
 public class PorInvitado extends TipoCobro{
 
     @Override
-    public double calcularMonto(DatosCobro datos, double costoUnitario) {
-        return costoUnitario*datos.getInvitados();
+    public double calcularMonto(int cantidad, double costoUnitario) {
+        return costoUnitario*cantidad;
     }
 
     @Override

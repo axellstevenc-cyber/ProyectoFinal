@@ -11,7 +11,7 @@ import java.io.Serializable;
  * @author axelher67
  */
 public abstract class TipoCobro implements Serializable{
-    public abstract double calcularMonto(DatosCobro datos,double costoUnitario);
+    public abstract double calcularMonto(int cantidad,double costoUnitario);
     public abstract String getUnidad();
     public abstract int obtenerCantidad(DatosCobro datos);
 }
