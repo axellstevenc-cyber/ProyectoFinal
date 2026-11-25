@@ -14,16 +14,16 @@ public class Proveedor implements Serializable {
 
     private final String codigoProveedor;
     private String nombre;
-    private String telefono;
+    private String contacto;
     private boolean estado;
 
-    public Proveedor(String codigoProveedor, String nombre, String telefono) {
+    public Proveedor(String codigoProveedor, String nombre, String contacto) {
         if (codigoProveedor == null || codigoProveedor.isBlank()) {
             throw new IllegalArgumentException("El codigo es obligatorio.");
         }
         this.codigoProveedor = codigoProveedor;
         setNombre(nombre);
-        setTelefono(telefono);
+        setContacto(contacto);
         this.estado = true;
     }
 
@@ -42,23 +42,32 @@ public class Proveedor implements Serializable {
         this.nombre = nombre;
     }
 
-    public String getTelefono() {
-        return telefono;
+    public String getContacto() {
+        return contacto;
     }
 
-    public void setTelefono(String telefono) {
-        if (telefono == null || telefono.isBlank()) {
-            throw new IllegalArgumentException("El teléfono es obligatorio.");
+    public void setContacto(String contacto) {
+        if (contacto == null || contacto.isBlank()) {
+            throw new IllegalArgumentException("El teléfono o correo de contacto es obligatorio.");
         }
-        if (telefono.length() != 8) {
-            throw new IllegalArgumentException("El teléfono debe tener 8 dígitos.");
-        }
-        for (int i = 0; i < telefono.length(); i++) {
-            if (!Character.isDigit(telefono.charAt(i))) {
-                throw new IllegalArgumentException("El telefono solo puede contener numeros.");
+        contacto = contacto.trim();
+        if (contacto.contains("@")) {
+            int arroba = contacto.indexOf('@');
+            int punto = contacto.lastIndexOf('.');
+            if (arroba < 1 || punto < arroba + 2 || punto == contacto.length() - 1 || contacto.contains(" ")) {
+                throw new IllegalArgumentException("El correo no tiene un formato válido.");
+            }
+        } else {
+            if (contacto.length() != 8) {
+                throw new IllegalArgumentException("El teléfono debe tener 8 dígitos.");
+            }
+            for (int i = 0; i < contacto.length(); i++) {
+                if (!Character.isDigit(contacto.charAt(i))) {
+                    throw new IllegalArgumentException("El teléfono solo puede contener números.");
+                }
             }
         }
-        this.telefono = telefono;
+        this.contacto = contacto;
     }
 
     public boolean isActivo() {
@@ -75,7 +84,7 @@ public class Proveedor implements Serializable {
 
     @Override
     public String toString() {
-        return "Proveedor [Codigo: " + codigoProveedor + " | Nombre: " + nombre + " | Teléfono: " + telefono + "]";
+        return "Proveedor [Codigo: " + codigoProveedor + " | Nombre: " + nombre + " | Contacto: " + contacto + "]";
     }
 
 }
