@@ -14,13 +14,13 @@ import java.util.ArrayList;
  *
  * @author axelher67
  */
-public class Evento implements Serializable{
+public class Evento implements Serializable {
 
-    private static final double PORCENTAJE_ISV= 0.15;
-    private String codigoEvento;
+    private static final double PORCENTAJE_ISV = 0.15;
+    private final String codigoEvento;
     private String nombreEvento;
     private String nombreCliente;
-    private String telefonoCliente;
+    private String contactoCliente;
     private TipoEvento tipoEvento;
     private LocalDateTime fechaHora;
     private int duracionHoras;
@@ -29,15 +29,15 @@ public class Evento implements Serializable{
     private EstadoEvento estadoEvento;
     private ArrayList<ProductoEvento> listaProductosDelEvento;
 
-    public Evento(String codigoEvento, String nombreEvento, String nombreCliente, String telefonoCliente, TipoEvento tipoEvento, LocalDateTime fechaHora, int duracionHoras,
+    public Evento(String codigoEvento, String nombreEvento, String nombreCliente, String contactoCliente, TipoEvento tipoEvento, LocalDateTime fechaHora, int duracionHoras,
             String lugar, int cantidadInvitados, EstadoEvento estadoEvento) {
         if (codigoEvento == null || codigoEvento.isBlank()) {
             throw new IllegalArgumentException("El codigo es obligatorio.");
         }
-        this.codigoEvento=codigoEvento;
+        this.codigoEvento = codigoEvento;
         setNombreEvento(nombreEvento);
         setNombreCliente(nombreCliente);
-        setTelefonoCliente(telefonoCliente);
+        setContactoCliente(contactoCliente);
         setTipoEvento(tipoEvento);
         setFechaHora(fechaHora);
         setDuracionHoras(duracionHoras);
@@ -59,7 +59,7 @@ public class Evento implements Serializable{
         if (nombreEvento == null || nombreEvento.isBlank()) {
             throw new IllegalArgumentException("El nombre del evento es obligatorio.");
         }
-        this.nombreEvento = nombreEvento;
+        this.nombreEvento = nombreEvento.trim();
     }
 
     public String getNombreCliente() {
@@ -70,26 +70,35 @@ public class Evento implements Serializable{
         if (nombreCliente == null || nombreCliente.isBlank()) {
             throw new IllegalArgumentException("El nombre del cliente es obligatorio.");
         }
-        this.nombreCliente = nombreCliente;
+        this.nombreCliente = nombreCliente.trim();
     }
 
-    public String getTelefonoCliente() {
-        return telefonoCliente;
+    public String getContactoCliente() {
+        return contactoCliente;
     }
 
-    public void setTelefonoCliente(String telefonoCliente) {
-        if (telefonoCliente == null || telefonoCliente.isBlank()) {
-            throw new IllegalArgumentException("El telefono del cliente es obligatorio.");
+    public void setContactoCliente(String contactoCliente) {
+        if (contactoCliente == null || contactoCliente.isBlank()) {
+            throw new IllegalArgumentException("El teléfono o correo de contacto es obligatorio.");
         }
-        if (telefonoCliente.length() != 8) {
-            throw new IllegalArgumentException("El teléfono debe tener 8 dígitos.");
-        }
-        for (int i = 0; i < telefonoCliente.length(); i++) {
-            if (!Character.isDigit(telefonoCliente.charAt(i))) {
-                throw new IllegalArgumentException("El telefono solo puede contener numeros.");
+        contactoCliente = contactoCliente.trim();
+        if (contactoCliente.contains("@")) {
+            int arroba = contactoCliente.indexOf('@');
+            int punto = contactoCliente.lastIndexOf('.');
+            if (arroba < 1 || punto < arroba + 2 || punto == contactoCliente.length() - 1 || contactoCliente.contains(" ")) {
+                throw new IllegalArgumentException("El correo no tiene un formato válido.");
+            }
+        } else {
+            if (contactoCliente.length() != 8) {
+                throw new IllegalArgumentException("El teléfono debe tener 8 dígitos.");
+            }
+            for (int i = 0; i < contactoCliente.length(); i++) {
+                if (!Character.isDigit(contactoCliente.charAt(i))) {
+                    throw new IllegalArgumentException("El teléfono solo puede contener números.");
+                }
             }
         }
-        this.telefonoCliente = telefonoCliente;
+        this.contactoCliente = contactoCliente;
     }
 
     public TipoEvento getTipoEvento() {
@@ -131,9 +140,9 @@ public class Evento implements Serializable{
 
     public void setLugar(String lugar) {
         if (lugar == null || lugar.isBlank()) {
-            throw new IllegalArgumentException("EL lugar del evento es obligatorio.");
+            throw new IllegalArgumentException("El lugar del evento es obligatorio.");
         }
-        this.lugar = lugar;
+        this.lugar = lugar.trim();
     }
 
     public int getCantidadInvitados() {
@@ -153,7 +162,7 @@ public class Evento implements Serializable{
 
     public void setEstadoEvento(EstadoEvento estadoEvento) {
         if (estadoEvento == null) {
-            throw new IllegalArgumentException("El estado del evento obligatorias");
+            throw new IllegalArgumentException("El estado del evento es obligatorio.");
         }
         this.estadoEvento = estadoEvento;
     }
@@ -180,7 +189,7 @@ public class Evento implements Serializable{
         }
         listaProductosDelEvento.add(pe);
     }
-    
+
     public void quitarProductoEvento(String codigo) {
         ProductoEvento pe = buscarProductoEvento(codigo);
 
@@ -191,7 +200,7 @@ public class Evento implements Serializable{
         listaProductosDelEvento.remove(pe);
 
     }
-   
+
     public void modificarCantidad(String codigo, Integer cantidad) {
         ProductoEvento pe = buscarProductoEvento(codigo);
         if (pe == null) {
@@ -201,38 +210,39 @@ public class Evento implements Serializable{
         pe.setCantidadManual(cantidad);
 
     }
-    
+
     public boolean tieneServicios() {
         return !listaProductosDelEvento.isEmpty();
     }
-    
-    public double calcularSubtotalEvento(){
-        DatosCobro datosEvento=generarDatosCobro();
-        double subtotalEvento=0;
+
+    public double calcularSubtotalEvento() {
+        DatosCobro datosEvento = generarDatosCobro();
+        double subtotalEvento = 0;
         for (ProductoEvento pe : listaProductosDelEvento) {
-            subtotalEvento+=pe.calcularSubtotal(datosEvento);
+            subtotalEvento += pe.calcularSubtotal(datosEvento);
         }
         return subtotalEvento;
     }
-    
-    public double calcularISV(){
-        return calcularSubtotalEvento()*PORCENTAJE_ISV;
+
+    public double calcularISV() {
+        return calcularSubtotalEvento() * PORCENTAJE_ISV;
     }
-    
-    public double calcularTotal(){
-        return calcularSubtotalEvento()+calcularISV();
+
+    public double calcularTotal() {
+        double subtotal = calcularSubtotalEvento();
+        return subtotal + subtotal * PORCENTAJE_ISV;
     }
-    
-    public DatosCobro generarDatosCobro(){
+
+    public DatosCobro generarDatosCobro() {
         DatosCobro datosEvento = new DatosCobro(duracionHoras, cantidadInvitados);
         return datosEvento;
     }
-    
+
     @Override
     public String toString() {
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-        return codigoEvento + " - " + nombreEvento+ " | Cliente: " + nombreCliente+ " | Tipo: " + tipoEvento+ " | Fecha: " + fechaHora.format(formato)
-                + " | Lugar: " + lugar+ " | Invitados: " + cantidadInvitados+ " | Estado: " + estadoEvento+ " | Servicios: " + listaProductosDelEvento.size();
+        return codigoEvento + " - " + nombreEvento + " | Cliente: " + nombreCliente + " | Tipo: " + tipoEvento + " | Fecha: " + fechaHora.format(formato)
+                + " | Lugar: " + lugar + " | Invitados: " + cantidadInvitados + " | Estado: " + estadoEvento + " | Servicios: " + listaProductosDelEvento.size();
     }
 
 }
