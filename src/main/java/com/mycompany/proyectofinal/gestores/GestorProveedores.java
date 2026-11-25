@@ -74,5 +74,16 @@ public class GestorProveedores implements Serializable {
         }
         p.reactivar();
     }
+    
+    public ArrayList<Proveedor> busquedaPorNombre(String busqueda){
+        busqueda=busqueda.trim().toLowerCase();
+        ArrayList<Proveedor> resultados = new ArrayList<>();
+        for (Proveedor p : proveedores) {
+            if (p.getNombre().toLowerCase().contains(busqueda)) {
+                resultados.add(p);
+            }
+        }
+        return resultados;
+    }
 
 }
