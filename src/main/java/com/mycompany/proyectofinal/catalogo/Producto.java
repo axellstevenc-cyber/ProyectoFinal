@@ -19,6 +19,7 @@ public class Producto implements Serializable {
     private double costoUnitario;
     private Proveedor proveedor;
     private TipoCobro tipoCobro;
+    private boolean estado;
 
     public Producto(String codigoProducto, String descripcion, CategoriaProducto categoria, double costoUnitario, Proveedor proveedor, TipoCobro tipoCobro) {
         if (codigoProducto == null || codigoProducto.isBlank()) {
@@ -30,6 +31,7 @@ public class Producto implements Serializable {
         setCostoUnitario(costoUnitario);
         setProveedor(proveedor);
         setTipoCobro(tipoCobro);
+        this.estado=true;
     }
 
     public String getCodigoProducto() {
@@ -44,7 +46,7 @@ public class Producto implements Serializable {
         if (descripcion == null || descripcion.isBlank()) {
             throw new IllegalArgumentException("La descripción es obligatoria.");
         }
-        this.descripcion = descripcion;
+        this.descripcion = descripcion.trim();
     }
 
     public CategoriaProducto getCategoria() {
@@ -89,6 +91,22 @@ public class Producto implements Serializable {
             throw new IllegalArgumentException("El producto debe tener una forma de cobro.");
         }
         this.tipoCobro = tipoCobro;
+    }
+    
+    public boolean estaDisponible() {
+        return estado && this.proveedor.isActivo();
+    }
+    
+    public boolean isActivo() {
+        return estado;
+    }
+
+    public void darDeBaja() {
+        this.estado = false;
+    }
+
+    public void reactivar() {
+        this.estado = true;
     }
     
     @Override
