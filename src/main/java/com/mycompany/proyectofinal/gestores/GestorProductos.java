@@ -6,6 +6,12 @@ package com.mycompany.proyectofinal.gestores;
 
 import com.mycompany.proyectofinal.catalogo.*;
 import com.mycompany.proyectofinal.cobros.TipoCobro;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -15,19 +21,24 @@ import java.util.ArrayList;
  */
 public class GestorProductos implements Serializable {
 
+    private static final String ARCHIVO = "Archivos/gestorProductos.txt";
     private static GestorProductos instancia;
     private ArrayList<Producto> productos;
     private int siguienteCodigo = 1;
 
-    public GestorProductos() {
+    private GestorProductos() {
         productos = new ArrayList<>();
+        cargarDatos();
     }
 
-    public void agregarProducto(String descripcion, CategoriaProducto categoria,
+    public Producto agregarProducto(String descripcion, CategoriaProducto categoria,
             double costoUnitario, Proveedor proveedor, TipoCobro tipoCobro) {
         String codigo = String.format("PRO-%03d", siguienteCodigo);
-        productos.add(new Producto(codigo, descripcion, categoria, costoUnitario, proveedor, tipoCobro));
+        Producto p = new Producto(codigo, descripcion, categoria, costoUnitario, proveedor, tipoCobro);
+        productos.add(p);
         siguienteCodigo++;
+        guardarDatos();
+        return p;
     }
 
     public Producto buscarProducto(String codigo) {
@@ -38,7 +49,7 @@ public class GestorProductos implements Serializable {
         }
         return null;
     }
-    
+
     public static GestorProductos getInstancia() {
         if (instancia == null) {
             instancia = new GestorProductos();
@@ -57,6 +68,7 @@ public class GestorProductos implements Serializable {
         p.setCostoUnitario(costoUnitario);
         p.setProveedor(proveedor);
         p.setTipoCobro(tipoCobro);
+        guardarDatos();
     }
 
     public ArrayList<Producto> listarProductos() {
@@ -89,6 +101,7 @@ public class GestorProductos implements Serializable {
             throw new IllegalArgumentException("El producto con ese codigo no existe");
         }
         p.darDeBaja();
+        guardarDatos();
     }
 
     public void reactivarProducto(String codigo) {
@@ -97,6 +110,7 @@ public class GestorProductos implements Serializable {
             throw new IllegalArgumentException("El producto con ese codigo no existe");
         }
         p.reactivar();
+        guardarDatos();
     }
 
     public ArrayList<Producto> busquedaPorNombre(String busqueda) {
@@ -109,4 +123,35 @@ public class GestorProductos implements Serializable {
         }
         return resultados;
     }
+
+    private void guardarDatos() {
+        File archivo = new File(ARCHIVO);
+        if (archivo.getParentFile() != null) {
+            archivo.getParentFile().mkdirs();
+        }
+        try (ObjectOutputStream oosCat = new ObjectOutputStream(new FileOutputStream(archivo))) {
+            oosCat.writeObject(productos);
+            oosCat.writeInt(siguienteCodigo);
+            System.out.println("Datos guardados");
+        } catch (IOException e) {
+            System.err.println("Error guardando los datos: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void cargarDatos() {
+        if (!new File(ARCHIVO).exists()) {
+            return;
+        }
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(ARCHIVO))) {
+            productos = (ArrayList<Producto>) ois.readObject();
+            siguienteCodigo = ois.readInt();
+            System.out.println("Datos cargardos");
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("Error guardando los datos: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
 }

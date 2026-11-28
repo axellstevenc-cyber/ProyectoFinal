@@ -3,20 +3,40 @@ package com.mycompany.proyectofinal.gestores;
 import com.mycompany.proyectofinal.eventos.EstadoEvento;
 import com.mycompany.proyectofinal.eventos.Evento;
 import com.mycompany.proyectofinal.eventos.TipoEvento;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.ArrayList;
 
+/**
+ *
+ * @author axelher67
+ */
+
 public class GestorEventos implements Serializable {
-    
+
+    private static final String ARCHIVO = "Archivos/gestorEventos.txt";
     private static GestorEventos instancia;
     private ArrayList<Evento> eventos;
     private int siguienteCodigo = 1;
 
-    public GestorEventos() {
+    private GestorEventos() {
         eventos = new ArrayList<>();
+        cargarDatos();
+    }
+
+    public static GestorEventos getInstancia() {
+        if (instancia == null) {
+            instancia = new GestorEventos();
+        }
+        return instancia;
     }
 
     public Evento agregarEvento(String nombreEvento, String nombreCliente, String contactoCliente,
@@ -28,6 +48,7 @@ public class GestorEventos implements Serializable {
                 fechaHora, duracionHoras, lugar, cantidadInvitados, estadoEvento);
         eventos.add(e);
         siguienteCodigo++;
+        guardarDatos();
         return e;
     }
 
@@ -58,17 +79,12 @@ public class GestorEventos implements Serializable {
         e.setLugar(lugar);
         e.setCantidadInvitados(cantidadInvitados);
         e.setEstadoEvento(estadoEvento);
-    }
-    
-    public static GestorEventos getInstancia() {
-        if (instancia == null) {
-            instancia = new GestorEventos();
-        }
-        return instancia;
+        guardarDatos();
     }
 
     public void eliminarEvento(String codigo) {
         eventos.remove(obtenerEvento(codigo));
+        guardarDatos();
     }
 
     public ArrayList<Evento> listarEventos() {
@@ -143,6 +159,36 @@ public class GestorEventos implements Serializable {
     private void validarFechaNueva(LocalDateTime fechaHora) {
         if (fechaHora == null || fechaHora.toLocalDate().isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("La fecha no puede ser anterior a hoy");
+        }
+    }
+
+    public void guardarDatos() {
+        File archivo = new File(ARCHIVO);
+        if (archivo.getParentFile() != null) {
+            archivo.getParentFile().mkdirs();
+        }
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(archivo))) {
+            oos.writeObject(eventos);
+            oos.writeInt(siguienteCodigo);
+            System.out.println("Datos guardados");
+        } catch (IOException e) {
+            System.err.println("Error guardando los datos: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void cargarDatos() {
+        if (!new File(ARCHIVO).exists()) {
+            return;
+        }
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(ARCHIVO))) {
+            eventos = (ArrayList<Evento>) ois.readObject();
+            siguienteCodigo = ois.readInt();
+            System.out.println("Datos cargados");
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("Error cargando los datos: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }
