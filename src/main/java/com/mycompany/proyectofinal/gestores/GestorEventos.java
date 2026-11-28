@@ -100,6 +100,16 @@ public class GestorEventos implements Serializable {
         }
         return resultados;
     }
+    
+    public double calcularTotalMes(YearMonth mes){
+        double totalMes=0;
+        for (Evento e : eventos) {
+            if (YearMonth.from(e.getFechaHora()).equals(mes) && e.getEstadoEvento()!= EstadoEvento.CANCELADO) {
+                totalMes+=e.calcularTotal();
+            }
+        }
+        return totalMes;
+    }
 
     public ArrayList<Evento> listarParaReporte(LocalDate inicio, LocalDate fin) {
         if (inicio == null || fin == null || fin.isBefore(inicio)) {
