@@ -10,7 +10,8 @@ import java.time.YearMonth;
 import java.util.ArrayList;
 
 public class GestorEventos implements Serializable {
-
+    
+    private static GestorEventos instancia;
     private ArrayList<Evento> eventos;
     private int siguienteCodigo = 1;
 
@@ -57,6 +58,13 @@ public class GestorEventos implements Serializable {
         e.setLugar(lugar);
         e.setCantidadInvitados(cantidadInvitados);
         e.setEstadoEvento(estadoEvento);
+    }
+    
+    public static GestorEventos getInstancia() {
+        if (instancia == null) {
+            instancia = new GestorEventos();
+        }
+        return instancia;
     }
 
     public void eliminarEvento(String codigo) {

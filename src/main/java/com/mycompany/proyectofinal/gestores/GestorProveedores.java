@@ -14,6 +14,7 @@ import java.util.ArrayList;
  */
 public class GestorProveedores implements Serializable {
 
+    private static GestorProveedores instancia;
     private ArrayList<Proveedor> proveedores;
     private int siguienteCodigo = 1;
 
@@ -34,6 +35,14 @@ public class GestorProveedores implements Serializable {
             }
         }
         return null;
+    }
+    
+    
+    public static GestorProveedores getInstancia() {
+        if (instancia == null) {
+            instancia = new GestorProveedores();
+        }
+        return instancia;
     }
 
     public void modificarProveedor(String codigo, String nombre, String contacto) {

@@ -15,6 +15,7 @@ import java.util.ArrayList;
  */
 public class GestorProductos implements Serializable {
 
+    private static GestorProductos instancia;
     private ArrayList<Producto> productos;
     private int siguienteCodigo = 1;
 
@@ -36,6 +37,13 @@ public class GestorProductos implements Serializable {
             }
         }
         return null;
+    }
+    
+    public static GestorProductos getInstancia() {
+        if (instancia == null) {
+            instancia = new GestorProductos();
+        }
+        return instancia;
     }
 
     public void modificarProducto(String codigo, String descripcion, CategoriaProducto categoria,
